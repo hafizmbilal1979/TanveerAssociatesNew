@@ -1,0 +1,170 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String            @id @default(cuid())
+  name            String
+  email           String            @unique
+  passwordHash    String
+  /// admin | editor | messages
+  role            String            @default("editor")
+  isActive        Boolean           @default(true)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  loginAttempts   LoginAttempt[]
+  messageComments MessageComment[]
+  messageLogs     MessageActivity[]
+}
+
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  email     String
+  ip        String?
+  success   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([email, createdAt])
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  sortOrder   Int       @default(0)
+  isEnabled   Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  projects    Project[]
+}
+
+model Project {
+  id           String         @id @default(cuid())
+  title        String
+  slug         String         @unique
+  clientName   String?
+  location     String?
+  year         String?
+  summary      String?
+  description  String?
+  coverImage   String?
+  categoryId   String
+  category     Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  sortOrder    Int            @default(0)
+  isFeatured   Boolean        @default(false)
+  isEnabled    Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  images       ProjectImage[]
+}
+
+model ProjectImage {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  path      String
+  alt       String?
+  sortOrder Int      @default(0)
+  isEnabled Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model TeamMember {
+  id         String   @id @default(cuid())
+  name       String
+  role       String
+  bio        String?
+  education  String?
+  experience String?
+  photo      String?
+  sortOrder  Int      @default(0)
+  isEnabled  Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Slider {
+  id        String   @id @default(cuid())
+  title     String?
+  subtitle  String?
+  image     String
+  linkUrl   String?
+  sortOrder Int      @default(0)
+  isEnabled Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+/// CMS blocks for homepage sections
+model HomeSection {
+  id        String   @id @default(cuid())
+  /// Unique key e.g. practice, featured, services, custom-1
+  key       String   @unique
+  /// practice | featured | services | custom
+  type      String
+  eyebrow   String?
+  title     String
+  body      String?
+  ctaLabel  String?
+  ctaUrl    String?
+  /// paper | stone | ink
+  bgStyle   String   @default("paper")
+  sortOrder Int      @default(0)
+  isEnabled Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContactMessage {
+  id        String            @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  message   String
+  isRead    Boolean           @default(false)
+  /// open | complete
+  status    String            @default("open")
+  isEnabled Boolean           @default(true)
+  createdAt DateTime          @default(now())
+  comments  MessageComment[]
+  activities MessageActivity[]
+}
+
+model MessageComment {
+  id        String         @id @default(cuid())
+  messageId String
+  message   ContactMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  body      String
+  createdAt DateTime       @default(now())
+}
+
+model MessageActivity {
+  id        String         @id @default(cuid())
+  messageId String
+  message   ContactMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// viewed | completed | reopened | commented
+  action    String
+  note      String?
+  createdAt DateTime       @default(now())
+
+  @@index([messageId, createdAt])
+}
