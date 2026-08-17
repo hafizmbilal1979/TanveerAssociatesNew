@@ -9,24 +9,21 @@ Modern Node.js + React (Next.js) redesign of [tanveerassociates.com](https://www
 - **NextAuth** credentials auth
 - **Zod** validation, upload hardening, security headers, login rate limiting
 
-## Run
+## Database (Supabase)
+
+This app uses **PostgreSQL on Supabase** via Prisma.
+
+1. Copy `.env.example` → `.env`
+2. Set `DATABASE_URL` to your Supabase **Session pooler** connection string (port `5432`, user `postgres.<project-ref>`). Direct `db.*.supabase.co:5432` is often IPv6-only.
+3. Run:
 
 ```bash
-cd "D:\AI Work\Tanveerassociates\NewDesignNodeJs"
 npm install
 npm run db:setup
 npm run dev
 ```
 
-- Website: http://localhost:3000  
-- Admin: http://localhost:3000/admin/login  
-
-### Default admin
-
-- Email: `admin@tanveerassociates.com`
-- Password: `Admin@TAA2026!`
-
-Change these in `.env` before production and re-run seed (or update the user in DB).
+`db:setup` pushes the schema and seeds projects/admin content.
 
 ## Admin capabilities
 
