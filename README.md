@@ -5,7 +5,7 @@ Modern Node.js + React (Next.js) redesign of [tanveerassociates.com](https://www
 ## Stack
 
 - **Next.js 15** (React 19, App Router)
-- **Prisma + SQLite** (swap to MySQL/Postgres via `DATABASE_URL`)
+- **Prisma + PostgreSQL (Supabase)**
 - **NextAuth** credentials auth
 - **Zod** validation, upload hardening, security headers, login rate limiting
 

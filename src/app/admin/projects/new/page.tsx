@@ -1,6 +1,6 @@
 ﻿import { requireAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
-import { ProjectForm } from "./project-form";
+import { ProjectForm } from "../project-form";
 
 export default async function NewProjectPage() {
   await requireAdmin("projects");
